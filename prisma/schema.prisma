@@ -2,16 +2,144 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-
 model user {
-  id String @id @default(uuid())
-  username String @db.VarChar(255) @unique
+  id       String @id @default(uuid())
+  username String @unique @db.VarChar(255)
   password String @db.VarChar(255)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model container {
+  id               String         @id @default(uuid())
+  containerNo      String         @unique @db.VarChar(255)
+  size             String         @db.VarChar(255)
+  manufacturerDate DateTime       @default(now())
+  containerType    CONTAINER_TYPE @default(TWENTY_FEET)
+  oneDayCharges    BigInt         @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  eir              eir[]
+  yardLocation     yardLocation[]
+}
+
+model consignee {
+  id            String @id @default(uuid())
+  consigneeName String @unique @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model operator {
+  id           String @id @default(uuid())
+  operatorName String @unique @db.VarChar(255)
+  credit       BigInt @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  eir       eir[]
+}
+
+enum EIR_STATUS {
+  GATE_IN
+  GATE_OFF
+}
+
+enum EIR_BILLING_STATUS {
+  CHARGE
+  LINE_BILL
+}
+
+enum CONTAINER_TYPE {
+  TWENTY_FEET
+  FOUTY_FEET
+}
+
+model eir {
+  id                   String              @id @default(uuid())
+  eirNo                String              @unique @db.VarChar(255)
+  status               EIR_STATUS          @default(GATE_IN)
+  containerId          String?             @db.VarChar(255)
+  container            container?          @relation(fields: [containerId], references: [id], onDelete: SetNull)
+  inDate               DateTime?           @default(now())
+  outDate              DateTime?           @default(now())
+  operatorId           String?             @db.VarChar(255)
+  operator             operator?           @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  vessel               String?
+  voyage               String?
+  grossWeight          BigInt              @default(0)
+  tareWeight           BigInt              @default(0)
+  netWeight            BigInt              @default(0)
+  washingStatus        String?             @db.VarChar(255)
+  standard             String?             @db.VarChar(255)
+  grade                String?             @db.VarChar(255)
+  washingCharges       BigInt              @default(0)
+  liftOffCharges       BigInt              @default(0)
+  liftOnCharges        BigInt              @default(0)
+  gateInTotalCharges   BigInt              @default(0)
+  gateOutTotalCharges  BigInt              @default(0)
+  totalCharges         BigInt              @default(0)
+  billingStatus        EIR_BILLING_STATUS  @default(CHARGE)
+  gateInvehicleInfoId  String?             @unique @db.VarChar(255)
+  gateInvehicleInfo    gateInvehicleInfo?  @relation(fields: [gateInvehicleInfoId], references: [id], onDelete: SetNull)
+  gateOutvehicleInfoId String?             @unique @db.VarChar(255)
+  gateOutvehicleInfo   gateOutvehicleInfo? @relation(fields: [gateOutvehicleInfoId], references: [id], onDelete: SetNull)
+  remark               String?             @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model gateInvehicleInfo {
+  id         String @id @default(uuid())
+  vehicelNo  String @db.VarChar(255)
+  licenseNo  String @db.VarChar(255)
+  driverName String @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  eir       eir?
+}
+
+model gateOutvehicleInfo {
+  id         String @id @default(uuid())
+  vehicelNo  String @db.VarChar(255)
+  licenseNo  String @db.VarChar(255)
+  driverName String @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  eir       eir?
+}
+
+model yard {
+  id           String         @id @default(uuid())
+  no           String         @unique @db.VarChar(255)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  yardLocation yardLocation[]
+}
+
+model yardLocation {
+  id          String     @id @default(uuid())
+  containerId String?    @db.VarChar(255)
+  container   container? @relation(fields: [containerId], references: [id], onDelete: SetNull)
+  yardId      String?    @db.VarChar(255)
+  yard        yard?      @relation(fields: [yardId], references: [id], onDelete: SetNull)
+  floor       Int        @default(0)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }

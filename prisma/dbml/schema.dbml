@@ -1,0 +1,140 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table user {
+  id String [pk]
+  username String [unique, not null]
+  password String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table container {
+  id String [pk]
+  containerNo String [unique, not null]
+  size String [not null]
+  manufacturerDate DateTime [default: `now()`, not null]
+  containerType CONTAINER_TYPE [not null, default: 'TWENTY_FEET']
+  oneDayCharges BigInt [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  eir eir [not null]
+  yardLocation yardLocation [not null]
+}
+
+Table consignee {
+  id String [pk]
+  consigneeName String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table operator {
+  id String [pk]
+  operatorName String [unique, not null]
+  credit BigInt [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  eir eir [not null]
+}
+
+Table eir {
+  id String [pk]
+  eirNo String [unique, not null]
+  status EIR_STATUS [not null, default: 'GATE_IN']
+  containerId String
+  container container
+  inDate DateTime [default: `now()`]
+  outDate DateTime [default: `now()`]
+  operatorId String
+  operator operator
+  vessel String
+  voyage String
+  grossWeight BigInt [not null, default: 0]
+  tareWeight BigInt [not null, default: 0]
+  netWeight BigInt [not null, default: 0]
+  washingStatus String
+  standard String
+  grade String
+  washingCharges BigInt [not null, default: 0]
+  liftOffCharges BigInt [not null, default: 0]
+  liftOnCharges BigInt [not null, default: 0]
+  gateInTotalCharges BigInt [not null, default: 0]
+  gateOutTotalCharges BigInt [not null, default: 0]
+  totalCharges BigInt [not null, default: 0]
+  billingStatus EIR_BILLING_STATUS [not null, default: 'CHARGE']
+  gateInvehicleInfoId String [unique]
+  gateInvehicleInfo gateInvehicleInfo
+  gateOutvehicleInfoId String [unique]
+  gateOutvehicleInfo gateOutvehicleInfo
+  remark String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table gateInvehicleInfo {
+  id String [pk]
+  vehicelNo String [not null]
+  licenseNo String [not null]
+  driverName String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  eir eir
+}
+
+Table gateOutvehicleInfo {
+  id String [pk]
+  vehicelNo String [not null]
+  licenseNo String [not null]
+  driverName String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  eir eir
+}
+
+Table yard {
+  id String [pk]
+  no String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  yardLocation yardLocation [not null]
+}
+
+Table yardLocation {
+  id String [pk]
+  containerId String
+  container container
+  yardId String
+  yard yard
+  floor Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Enum EIR_STATUS {
+  GATE_IN
+  GATE_OFF
+}
+
+Enum EIR_BILLING_STATUS {
+  CHARGE
+  LINE_BILL
+}
+
+Enum CONTAINER_TYPE {
+  TWENTY_FEET
+  FOUTY_FEET
+}
+
+Ref: eir.containerId > container.id [delete: Set Null]
+
+Ref: eir.operatorId > operator.id [delete: Set Null]
+
+Ref: eir.gateInvehicleInfoId - gateInvehicleInfo.id [delete: Set Null]
+
+Ref: eir.gateOutvehicleInfoId - gateOutvehicleInfo.id [delete: Set Null]
+
+Ref: yardLocation.containerId > container.id [delete: Set Null]
+
+Ref: yardLocation.yardId > yard.id [delete: Set Null]
