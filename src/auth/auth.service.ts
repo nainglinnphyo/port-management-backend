@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   Injectable,
   UnauthorizedException,
@@ -53,12 +54,17 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const saltOrRounds = 10;
     try {
-      return this.dbService.user.create({
-        data: {
-          username: registerDto.username,
-          password: await bcrypt.hash(registerDto.password, saltOrRounds),
-        },
-      });
+      return this.dbService.user
+        .create({
+          data: {
+            username: registerDto.username,
+            password: await bcrypt.hash(registerDto.password, saltOrRounds),
+          },
+        })
+        .then((data) => data)
+        .catch((err) => {
+          throw new HttpException(err.message, 400);
+        });
     } catch (error) {
       throw new HttpException(error, 500);
     }

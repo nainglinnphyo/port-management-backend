@@ -96,6 +96,7 @@ model eir {
   gateOutvehicleInfoId String?             @unique @db.VarChar(255)
   gateOutvehicleInfo   gateOutvehicleInfo? @relation(fields: [gateOutvehicleInfoId], references: [id], onDelete: SetNull)
   remark               String?             @db.Text
+  // bookingNo            String?             @db.Varchar
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -124,8 +125,8 @@ model gateOutvehicleInfo {
 }
 
 model yard {
-  id           String         @id @default(uuid())
-  no           String         @unique @db.VarChar(255)
+  id String @id @default(uuid())
+  no String @unique @db.VarChar(255)
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -140,6 +141,6 @@ model yardLocation {
   yard        yard?      @relation(fields: [yardId], references: [id], onDelete: SetNull)
   floor       Int        @default(0)
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
