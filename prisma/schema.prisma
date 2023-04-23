@@ -27,6 +27,8 @@ model container {
   manufacturerDate DateTime       @default(now())
   containerType    CONTAINER_TYPE @default(TWENTY_FEET)
   oneDayCharges    BigInt         @default(0)
+  grade            String?        @db.VarChar(255)
+  standard         String?        @db.VarChar(255)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   eir              eir[]
@@ -45,6 +47,16 @@ model operator {
   id           String @id @default(uuid())
   operatorName String @unique @db.VarChar(255)
   credit       BigInt @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  eir       eir[]
+}
+
+model shipper {
+  id          String @id @default(uuid())
+  shipperName String @unique @db.VarChar(255)
+  credit      BigInt @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,27 +88,26 @@ model eir {
   outDate              DateTime?           @default(now())
   operatorId           String?             @db.VarChar(255)
   operator             operator?           @relation(fields: [operatorId], references: [id], onDelete: SetNull)
-  vessel               String?
-  voyage               String?
+  shipperId            String?             @db.VarChar(255)
+  shipper              shipper?            @relation(fields: [shipperId], references: [id], onDelete: SetNull)
+  vessel               String?             @db.VarChar(255)
+  voyage               String?             @db.VarChar(255)
   grossWeight          BigInt              @default(0)
   tareWeight           BigInt              @default(0)
   netWeight            BigInt              @default(0)
-  washingStatus        String?             @db.VarChar(255)
-  standard             String?             @db.VarChar(255)
-  grade                String?             @db.VarChar(255)
   washingCharges       BigInt              @default(0)
+  washingStatus        String?             @db.VarChar(255)
   liftOffCharges       BigInt              @default(0)
   liftOnCharges        BigInt              @default(0)
   gateInTotalCharges   BigInt              @default(0)
   gateOutTotalCharges  BigInt              @default(0)
-  totalCharges         BigInt              @default(0)
   billingStatus        EIR_BILLING_STATUS  @default(CHARGE)
   gateInvehicleInfoId  String?             @unique @db.VarChar(255)
   gateInvehicleInfo    gateInvehicleInfo?  @relation(fields: [gateInvehicleInfoId], references: [id], onDelete: SetNull)
   gateOutvehicleInfoId String?             @unique @db.VarChar(255)
   gateOutvehicleInfo   gateOutvehicleInfo? @relation(fields: [gateOutvehicleInfoId], references: [id], onDelete: SetNull)
   remark               String?             @db.Text
-  // bookingNo            String?             @db.Varchar
+  bookingNo            String?             @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
