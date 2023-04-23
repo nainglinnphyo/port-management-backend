@@ -1,11 +1,28 @@
 -- CreateTable
+CREATE TABLE `user` (
+    `id` VARCHAR(191) NOT NULL,
+    `username` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `user_username_key`(`username`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `container` (
     `id` VARCHAR(191) NOT NULL,
     `containerNo` VARCHAR(255) NOT NULL,
     `size` VARCHAR(255) NOT NULL,
+    `operatorId` VARCHAR(255) NULL,
     `manufacturerDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `containerType` ENUM('TWENTY_FEET', 'FOUTY_FEET') NOT NULL DEFAULT 'TWENTY_FEET',
-    `oneDayCharges` BIGINT NOT NULL DEFAULT 0,
+    `oneDayCharges` DOUBLE NOT NULL DEFAULT 0,
+    `grade` VARCHAR(255) NULL,
+    `standard` VARCHAR(255) NULL,
+    `vessel` VARCHAR(255) NULL,
+    `voyage` VARCHAR(255) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -28,11 +45,22 @@ CREATE TABLE `consignee` (
 CREATE TABLE `operator` (
     `id` VARCHAR(191) NOT NULL,
     `operatorName` VARCHAR(255) NOT NULL,
-    `credit` BIGINT NOT NULL DEFAULT 0,
+    `credit` DOUBLE NOT NULL DEFAULT 0,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `operator_operatorName_key`(`operatorName`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `shipper` (
+    `id` VARCHAR(191) NOT NULL,
+    `shipperName` VARCHAR(255) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `shipper_shipperName_key`(`shipperName`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -45,24 +73,23 @@ CREATE TABLE `eir` (
     `inDate` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `outDate` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `operatorId` VARCHAR(255) NULL,
-    `vessel` VARCHAR(191) NULL,
-    `voyage` VARCHAR(191) NULL,
+    `shipperId` VARCHAR(255) NULL,
+    `vessel` VARCHAR(255) NULL,
+    `voyage` VARCHAR(255) NULL,
     `grossWeight` BIGINT NOT NULL DEFAULT 0,
     `tareWeight` BIGINT NOT NULL DEFAULT 0,
     `netWeight` BIGINT NOT NULL DEFAULT 0,
+    `washingCharges` DOUBLE NOT NULL DEFAULT 0,
     `washingStatus` VARCHAR(255) NULL,
-    `standard` VARCHAR(255) NULL,
-    `grade` VARCHAR(255) NULL,
-    `washingCharges` BIGINT NOT NULL DEFAULT 0,
-    `liftOffCharges` BIGINT NOT NULL DEFAULT 0,
-    `liftOnCharges` BIGINT NOT NULL DEFAULT 0,
-    `gateInTotalCharges` BIGINT NOT NULL DEFAULT 0,
-    `gateOutTotalCharges` BIGINT NOT NULL DEFAULT 0,
-    `totalCharges` BIGINT NOT NULL DEFAULT 0,
+    `liftOffCharges` DOUBLE NOT NULL DEFAULT 0,
+    `liftOnCharges` DOUBLE NOT NULL DEFAULT 0,
+    `gateInTotalCharges` DOUBLE NOT NULL DEFAULT 0,
+    `gateOutTotalCharges` DOUBLE NOT NULL DEFAULT 0,
     `billingStatus` ENUM('CHARGE', 'LINE_BILL') NOT NULL DEFAULT 'CHARGE',
     `gateInvehicleInfoId` VARCHAR(255) NULL,
     `gateOutvehicleInfoId` VARCHAR(255) NULL,
     `remark` TEXT NULL,
+    `bookingNo` VARCHAR(255) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -120,10 +147,16 @@ CREATE TABLE `yardLocation` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
+ALTER TABLE `container` ADD CONSTRAINT `container_operatorId_fkey` FOREIGN KEY (`operatorId`) REFERENCES `operator`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `eir` ADD CONSTRAINT `eir_containerId_fkey` FOREIGN KEY (`containerId`) REFERENCES `container`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `eir` ADD CONSTRAINT `eir_operatorId_fkey` FOREIGN KEY (`operatorId`) REFERENCES `operator`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `eir` ADD CONSTRAINT `eir_shipperId_fkey` FOREIGN KEY (`shipperId`) REFERENCES `shipper`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `eir` ADD CONSTRAINT `eir_gateInvehicleInfoId_fkey` FOREIGN KEY (`gateInvehicleInfoId`) REFERENCES `gateInvehicleInfo`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

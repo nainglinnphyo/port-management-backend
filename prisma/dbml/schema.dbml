@@ -14,11 +14,15 @@ Table container {
   id String [pk]
   containerNo String [unique, not null]
   size String [not null]
+  operatorId String
+  operator operator
   manufacturerDate DateTime [default: `now()`, not null]
   containerType CONTAINER_TYPE [not null, default: 'TWENTY_FEET']
-  oneDayCharges BigInt [not null, default: 0]
+  oneDayCharges Float [not null, default: 0]
   grade String
   standard String
+  vessel String
+  voyage String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   eir eir [not null]
@@ -35,16 +39,16 @@ Table consignee {
 Table operator {
   id String [pk]
   operatorName String [unique, not null]
-  credit BigInt [not null, default: 0]
+  credit Float [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   eir eir [not null]
+  container container [not null]
 }
 
 Table shipper {
   id String [pk]
   shipperName String [unique, not null]
-  credit BigInt [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   eir eir [not null]
@@ -67,12 +71,12 @@ Table eir {
   grossWeight BigInt [not null, default: 0]
   tareWeight BigInt [not null, default: 0]
   netWeight BigInt [not null, default: 0]
-  washingCharges BigInt [not null, default: 0]
+  washingCharges Float [not null, default: 0]
   washingStatus String
-  liftOffCharges BigInt [not null, default: 0]
-  liftOnCharges BigInt [not null, default: 0]
-  gateInTotalCharges BigInt [not null, default: 0]
-  gateOutTotalCharges BigInt [not null, default: 0]
+  liftOffCharges Float [not null, default: 0]
+  liftOnCharges Float [not null, default: 0]
+  gateInTotalCharges Float [not null, default: 0]
+  gateOutTotalCharges Float [not null, default: 0]
   billingStatus EIR_BILLING_STATUS [not null, default: 'CHARGE']
   gateInvehicleInfoId String [unique]
   gateInvehicleInfo gateInvehicleInfo
@@ -137,6 +141,8 @@ Enum CONTAINER_TYPE {
   TWENTY_FEET
   FOUTY_FEET
 }
+
+Ref: container.operatorId > operator.id [delete: Set Null]
 
 Ref: eir.containerId > container.id [delete: Set Null]
 
