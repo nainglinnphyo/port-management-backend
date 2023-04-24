@@ -47,4 +47,17 @@ export class ContainerService {
         throw new HttpException(error.name, 400);
       });
   }
+
+  async search(containerNo: string) {
+    console.log(containerNo);
+    return this.dbService.container
+      .findMany({
+        where: { containerNo: { contains: containerNo } },
+        include: { operator: { select: { id: true, operatorName: true } } },
+      })
+      .then((data) => data)
+      .catch((error) => {
+        throw new HttpException(error.name, 400);
+      });
+  }
 }

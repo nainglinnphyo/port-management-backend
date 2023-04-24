@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 generator dbml {
@@ -28,7 +29,7 @@ model container {
   operator         operator?      @relation(fields: [operatorId], references: [id], onDelete: SetNull)
   manufacturerDate DateTime       @default(now())
   containerType    CONTAINER_TYPE @default(TWENTY_FEET)
-  oneDayCharges    Float         @default(0)
+  oneDayCharges    Float          @default(0)
   grade            String?        @db.VarChar(255)
   standard         String?        @db.VarChar(255)
   vessel           String?        @db.VarChar(255)
@@ -50,7 +51,7 @@ model consignee {
 model operator {
   id           String @id @default(uuid())
   operatorName String @unique @db.VarChar(255)
-  credit       Float @default(0)
+  credit       Float  @default(0)
 
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -99,12 +100,12 @@ model eir {
   grossWeight          BigInt              @default(0)
   tareWeight           BigInt              @default(0)
   netWeight            BigInt              @default(0)
-  washingCharges       Float              @default(0)
+  washingCharges       Float               @default(0)
   washingStatus        String?             @db.VarChar(255)
-  liftOffCharges       Float              @default(0)
-  liftOnCharges        Float              @default(0)
-  gateInTotalCharges   Float              @default(0)
-  gateOutTotalCharges  Float              @default(0)
+  liftOffCharges       Float               @default(0)
+  liftOnCharges        Float               @default(0)
+  gateInTotalCharges   Float               @default(0)
+  gateOutTotalCharges  Float               @default(0)
   billingStatus        EIR_BILLING_STATUS  @default(CHARGE)
   gateInvehicleInfoId  String?             @unique @db.VarChar(255)
   gateInvehicleInfo    gateInvehicleInfo?  @relation(fields: [gateInvehicleInfoId], references: [id], onDelete: SetNull)

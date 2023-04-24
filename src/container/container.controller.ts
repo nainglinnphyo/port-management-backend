@@ -14,7 +14,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('container')
 export class ContainerController {
   constructor(private containerService: ContainerService) {}
-  
+
   @Post('create')
   @UseGuards(AuthGuard)
   @HttpCode(201)
@@ -27,5 +27,11 @@ export class ContainerController {
   @HttpCode(200)
   async findOne(@Param('containerNo') containerNo: string) {
     return this.containerService.findOne(containerNo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('search/:containerNo')
+  async search(@Param('containerNo') containerNo: string) {
+    return this.containerService.search(containerNo);
   }
 }
