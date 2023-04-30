@@ -14,7 +14,7 @@ export class ContainerService {
             containerNo: dto.containerNo,
             size: dto.size,
             containerType: dto.type,
-            grade: dto.grade,
+            // grade: dto.grade,
             manufacturerDate: new Date(dto.manufactureDate).toISOString(),
             oneDayCharges: parseInt(dto.oneDayCharges),
             operator: {
@@ -49,7 +49,6 @@ export class ContainerService {
   }
 
   async search(containerNo: string) {
-    console.log(containerNo);
     return this.dbService.container
       .findMany({
         where: { containerNo: { contains: containerNo } },
