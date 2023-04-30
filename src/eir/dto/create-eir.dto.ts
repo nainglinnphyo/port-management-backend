@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-export class CreateEirDto {
+export class CreateGateInDto {
   @IsNotEmpty()
   @IsString()
   eirNo: string;
