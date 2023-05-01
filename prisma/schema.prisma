@@ -44,6 +44,7 @@ model consignee {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  eir       eir[]
 }
 
 model operator {
@@ -91,13 +92,15 @@ model eir {
   outDate              DateTime?           @default(now())
   operatorId           String?             @db.VarChar(255)
   operator             operator?           @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  consigneeId          String?             @db.VarChar(255)
+  consignee            consignee?          @relation(fields: [consigneeId], references: [id], onDelete: SetNull)
   shipperId            String?             @db.VarChar(255)
   shipper              shipper?            @relation(fields: [shipperId], references: [id], onDelete: SetNull)
   vessel               String?             @db.VarChar(255)
   voyage               String?             @db.VarChar(255)
-  grossWeight          BigInt              @default(0)
-  tareWeight           BigInt              @default(0)
-  netWeight            BigInt              @default(0)
+  grossWeight          Int              @default(0)
+  tareWeight           Int              @default(0)
+  netWeight            Int              @default(0)
   washingCharges       Float               @default(0)
   washingStatus        String?             @db.VarChar(255)
   liftOffCharges       Float               @default(0)
@@ -120,7 +123,7 @@ model eir {
 
 model gateInvehicleInfo {
   id         String @id @default(uuid())
-  vehicelNo  String @db.VarChar(255)
+  vehicleNo  String @db.VarChar(255)
   licenseNo  String @db.VarChar(255)
   driverName String @db.VarChar(255)
 
@@ -131,7 +134,7 @@ model gateInvehicleInfo {
 
 model gateOutvehicleInfo {
   id         String @id @default(uuid())
-  vehicelNo  String @db.VarChar(255)
+  vehicleNo  String @db.VarChar(255)
   licenseNo  String @db.VarChar(255)
   driverName String @db.VarChar(255)
 
